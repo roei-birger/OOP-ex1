@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class WGraph_DS implements weighted_graph {
+public class WGraph_DS implements weighted_graph, java.io.Serializable {
 
     private HashMap<Integer, node_info> vertices;
     private int mc;
@@ -28,15 +28,12 @@ public class WGraph_DS implements weighted_graph {
      *
      * @param gr
      */
-
-    /***/
     public WGraph_DS(weighted_graph gr) {
         if (gr != null) {
             this.vertices = new HashMap<>();
             Iterator<node_info> t = gr.getV().iterator();
             while (t.hasNext()) {
-                node_info temp2 = new NodeInfo(t.next());
-                this.vertices.put(temp2.getKey(), temp2);
+                addNode(t.next().getKey());
             }
             for (node_info nodeTemp : gr.getV()) {
                 Iterator<node_info> t2 = ((NodeInfo) nodeTemp).getNi().iterator();
@@ -46,9 +43,10 @@ public class WGraph_DS implements weighted_graph {
                 }
             }
 
-            this.mc = gr.getMC();
+
             this.edSize = gr.edgeSize();
             this.noSize = gr.nodeSize();
+            this.mc = gr.edgeSize() + gr.nodeSize();
         }
     }
 
@@ -70,7 +68,6 @@ public class WGraph_DS implements weighted_graph {
             return (((NodeInfo) getNode(node2)).hasNi(node1));
         return false;
     }
-
 
     @Override
     public double getEdge(int node1, int node2) {
@@ -122,6 +119,7 @@ public class WGraph_DS implements weighted_graph {
      */
     @Override
     public Collection<node_info> getV() {
+        if (this.vertices == null) return null;
         return this.vertices.values();
     }
 
@@ -219,15 +217,29 @@ public class WGraph_DS implements weighted_graph {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof WGraph_DS))
+            return false;
+        WGraph_DS w = (WGraph_DS) o;
+        if (w.edgeSize() != this.edSize | w.nodeSize() != this.noSize)
+            return false;
 
-    private static class NodeInfo implements node_info {
+        if (!(w.vertices.equals(this.vertices)))
+            return false;
+
+        return true;
+    }
+
+
+    private static class NodeInfo implements node_info, java.io.Serializable {
 
         private static int id = 0;
         private HashMap<Integer, node_info> myNeighbors;
         private HashMap<Integer, EdgeNode> edges;
         private int key;
         private double tag;
-        private String info;
+        private String info = "";
 
 
         /**
@@ -245,7 +257,7 @@ public class WGraph_DS implements weighted_graph {
         public NodeInfo(int k) {
             this.key = k;
             this.tag = 0;
-            this.info = null;
+            this.info = "";
             this.myNeighbors = new HashMap<>();
             this.edges = new HashMap<>();
 
@@ -263,11 +275,10 @@ public class WGraph_DS implements weighted_graph {
                 this.edges = new HashMap<>();
                 this.tag = node.getTag();
                 this.info = node.getInfo();
-
+                this.key = node.getKey();
 
             }
         }
-
 
         /**
          * @return the node's key.
@@ -367,55 +378,83 @@ public class WGraph_DS implements weighted_graph {
             return "" + key;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof NodeInfo))
+                return false;
+            HashMap e = ((NodeInfo) o).edges;
+            NodeInfo node = (NodeInfo) o;
+
+            if (this.tag != node.getTag() | !(this.info.equals(node.getInfo())))
+                return false;
+
+            if (this.key != node.getKey() | !(e.equals(this.edges)))
+                return false;
+
+
+            return true;
+
+        }
+
+        public static class EdgeNode implements java.io.Serializable {
+            int first_key;
+            int second_key;
+            double weigh;
+            double flag;
+
+            public EdgeNode(EdgeNode t) {
+                this.weigh = t.weigh;
+                this.flag = t.flag;
+                this.first_key = t.first_key;
+                this.second_key = t.second_key;
+            }
+
+            public EdgeNode(int first_key, int second_key, double weigh) {
+                this.weigh = weigh;
+                this.flag = 0;
+                this.first_key = first_key;
+                this.second_key = second_key;
+            }
+
+            public int getFirst_key() {
+                return first_key;
+            }
+
+            public int getSecond_key() {
+                return second_key;
+            }
+
+            public double getWeigh() {
+                return weigh;
+            }
+
+            public void setWeigh(double weigh) {
+                this.weigh = weigh;
+            }
+
+            public double getFlag() {
+                return flag;
+            }
+
+            public void setFlag(double flag) {
+                this.flag = flag;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (!(o instanceof EdgeNode))
+                    return false;
+                EdgeNode t = (EdgeNode) o;
+                if (this.weigh == t.weigh & this.flag == t.flag & this.first_key == t.first_key & this.second_key == t.second_key) {
+                    return true;
+                }
+                return false;
+            }
+
+
+        }
+
 
     }
-
-    public static class EdgeNode {
-        int first_key;
-        int second_key;
-        double weigh;
-        double flag;
-
-        public EdgeNode(EdgeNode t) {
-            this.weigh = t.weigh;
-            this.flag = t.flag;
-            this.first_key = t.first_key;
-            this.second_key = t.second_key;
-        }
-
-        public EdgeNode(int first_key, int second_key, double weigh) {
-            this.weigh = weigh;
-            this.flag = 0;
-            this.first_key = first_key;
-            this.second_key = second_key;
-        }
-
-        public int getFirst_key() {
-            return first_key;
-        }
-
-        public int getSecond_key() {
-            return second_key;
-        }
-
-        public double getWeigh() {
-            return weigh;
-        }
-
-        public void setWeigh(double weigh) {
-            this.weigh = weigh;
-        }
-
-        public double getFlag() {
-            return flag;
-        }
-
-        public void setFlag(double flag) {
-            this.flag = flag;
-        }
-
-    }
-
-
 }
 

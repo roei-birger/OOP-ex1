@@ -26,8 +26,16 @@ class WGraph_DSTest {
     }
 
     @Test
-    void copyConstructor() {
-/////////////////////////////////////////////////LATER//////////////////////////////////////////////////////////
+    void copyConstructorBase() {
+        weighted_graph g1 = new WGraph_DS(g);
+        assertEquals(g, g1, "copyConstructor didn't make a deep copy");
+    }
+
+    @Test
+    void copyConstructorError() {
+        weighted_graph g1 = new WGraph_DS(g);
+        g1.removeNode(3);
+        assertNotEquals(g, g1, "copyConstructor didn't make a deep copy");
     }
 
     @Test

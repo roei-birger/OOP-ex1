@@ -1,9 +1,10 @@
 package ex1;
 
+import java.io.*;
 import java.util.*;
 
 
-public class WGraph_Algo implements weighted_graph_algorithms {
+public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializable {
 
     private weighted_graph my_g;
     private HashMap<Integer, myWay> path;
@@ -90,6 +91,8 @@ public class WGraph_Algo implements weighted_graph_algorithms {
     @Override
     public double shortestPathDist(int src, int dest) {
         path = new HashMap<>();
+        if (my_g == null) return -1;
+        if (my_g.getNode(src) == null | my_g.getNode(dest) == null) return -1;
         PriorityQueue<myWay> q = new PriorityQueue<>();
         if (src == dest) {
             myWay first = new myWay(src);
@@ -144,28 +147,64 @@ public class WGraph_Algo implements weighted_graph_algorithms {
         LinkedList<node_info> finalList = new LinkedList<>();
         myWay tempO = path.get(dest);
         node_info tempN = my_g.getNode(tempO.getId());
-        finalList.addFirst(tempN);
+
         if (dest == src) {
+            finalList.addFirst(tempN);
             return finalList;
         }
-
+        finalList.addFirst(tempN);
         while (tempO.getShortDis() > 0) {
             tempO = tempO.getParent();
             tempN = my_g.getNode(tempO.getId());
             finalList.addFirst(tempN);
 
         }
+
         return finalList;
     }
 
     @Override
     public boolean save(String file) {
-        return false;
+        try {
+            FileOutputStream myFile = new FileOutputStream(file);
+            ObjectOutputStream out = new ObjectOutputStream((myFile));
+
+            out.writeObject(this.my_g);
+
+            myFile.close();
+            out.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+
     }
 
     @Override
     public boolean load(String file) {
-        return false;
+        try {
+            FileInputStream myFile = new FileInputStream(file);
+            ObjectInputStream in = new ObjectInputStream(myFile);
+
+            this.my_g = (weighted_graph) in.readObject();
+            myFile.close();
+            in.close();
+
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "WGraph_Algo{" +
+                "my_g=" + my_g +
+                '}';
     }
 
     public static class myWay implements Comparable<myWay> {
