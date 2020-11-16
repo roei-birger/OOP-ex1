@@ -5,14 +5,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,10 +14,11 @@ class WGraph_AlgoTest {
 
     private weighted_graph g;
     private weighted_graph_algorithms ga;
+    static long start = new Date().getTime();
 
     @BeforeAll
     public static void BeforeAll() {
-        System.out.println("start");
+        System.out.println("Start");
     }
 
     //reset graph to default
@@ -49,7 +44,7 @@ class WGraph_AlgoTest {
     @Test
     void getGraphBase() {
         weighted_graph g1 = ga.getGraph();
-        assertTrue(g.equals(g1), "getGraph doesn't return the same graph");
+        assertEquals(g1, g, "getGraph doesn't return the same graph");
     }
 
     @Test
@@ -73,9 +68,9 @@ class WGraph_AlgoTest {
         weighted_graph g1 = ga.copy();
         assertEquals(g, g1, "copy doesn't make a deep copy");
         g1.addNode(5);
-        assertFalse(g.equals(g1), "the copied graph stay the same after add node");
+        assertNotEquals(g1, g, "the copied graph stay the same after add node");
         g1.removeNode(5);
-        assertTrue(g.equals(g1), "the copied graph stay the same after remove node");
+        assertEquals(g1, g, "the copied graph stay the same after remove node");
     }
 
     @Test
@@ -103,7 +98,7 @@ class WGraph_AlgoTest {
     @Test
     void isConnectedNull() {
         ga.init(null);
-        assertTrue(ga.isConnected(), "isConnected return false to null graph");
+        assertFalse(ga.isConnected(), "isConnected return True to null graph");
     }
 
     @Test
@@ -188,13 +183,12 @@ class WGraph_AlgoTest {
     @Test
     void shortestPathNullGraph() {
         ga.init(null);
-        LinkedList<node_info> finalList = new LinkedList<>();
         assertNull(ga.shortestPath(0, 4), "shortestPath return uncorrected list at null graph");
     }
 
     @Test
     void saveBase() {
-        try{
+        try {
             ga.save("file");
             ga.save("file");
             assertTrue(ga.save("file"));
@@ -210,8 +204,8 @@ class WGraph_AlgoTest {
         weighted_graph_algorithms ga2 = new WGraph_Algo();
         ga2.load("file");
         weighted_graph g1 = ga2.getGraph();
-        assertEquals(g,g1,"load return different graph");
-        }
+        assertEquals(g, g1, "load return different graph");
+    }
 
     @Test
     void loadAfterChange() {
@@ -220,13 +214,50 @@ class WGraph_AlgoTest {
         t1.load("file");
         weighted_graph g9 = t1.getGraph();
         g9.removeNode(-1);
-        assertNotEquals(g,g9,"load return different graph");
+        assertNotEquals(g, g9, "load return different graph");
+    }
+
+    @Test
+    void runTime2MillionNodes() {
+        long start = new Date().getTime();
+
+        for (int i = 0; i < 4000000; i++) {
+            g.addNode(i++);
+        }
+
+        double w = 0.7;
+
+        for (int i = 0, j = 1; i < 1000000; i++, j++) {
+            w += 0.9;
+            g.connect(i, j, w);
+            g.connect(0, j, w);
+            g.connect(1, i, w);
+            g.connect(2, j, w);
+            g.connect(3, i, w);
+            g.connect(4, j, w);
+            g.connect(5, i, w);
+            g.connect(6, j, w);
+            g.connect(7, i, w);
+            g.connect(8, j, w);
+            g.connect(9, i, w);
+            g.connect(10, j, w);
+
+        }
+        long end = new Date().getTime();
+        double dt = (end - start) / 1000.0;
+        System.out.println(dt);
+        assertTrue(dt < 3.5);
+        System.out.println("runTimeTwoMillionNodes: " + dt);
+
     }
 
 
     @AfterAll
     public static void AfterAll() {
-        System.out.println("finish succeed");
+        System.out.println("Finish succeed");
+        long end = new Date().getTime();
+        double dt = (end - start) / 1000.0;
+        System.out.println("All program runTime: " + dt);
     }
 
     public weighted_graph graph_creator() {

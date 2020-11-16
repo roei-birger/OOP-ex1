@@ -4,6 +4,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * This class implements weighted_graph interface that represents an unidirectional weighted graph.
+ * The implementation based on an efficient HashMap representation.
+ * The HashMap implement is for high efficiency.
+ * Field Summary:
+ * mc - count of changes in the WGraph_DS.
+ * edSize - count of edges in the WGraph_DS.
+ * noSize - count of vertices (nodes) in the WGraph_DS.
+ * vertices - collection containing all the vertices (nodes) in the WGraph_DS.
+ */
 public class WGraph_DS implements weighted_graph, java.io.Serializable {
 
     private HashMap<Integer, node_info> vertices;
@@ -12,7 +22,7 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
     private int noSize;
 
     /**
-     * Constructs a graph with not vertices.
+     * Constructs a WGraph_DS with not vertices.
      */
     public WGraph_DS() {
         this.mc = 0;
@@ -23,12 +33,13 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
     }
 
     /**
-     * Constructs a graph with the same fields
+     * Constructs a WGraph_DS with the same fields
      * as the specified graph object that was received.
      *
      * @param gr
      */
     public WGraph_DS(weighted_graph gr) {
+        if (gr == null) return;
         if (gr != null) {
             this.vertices = new HashMap<>();
             Iterator<node_info> t = gr.getV().iterator();
@@ -62,6 +73,11 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         return null;
     }
 
+    /**
+     * @param node1
+     * @param node2
+     * @return true if node1 is a neighbor of node2 and node2 is a neighbor of node1.
+     */
     @Override
     public boolean hasEdge(int node1, int node2) {
         if (vertices.containsKey(node1) & vertices.containsKey(node2))
@@ -69,10 +85,15 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         return false;
     }
 
+    /**
+     * @param node1
+     * @param node2
+     * @return the weight of the edge between two nodes.
+     */
     @Override
     public double getEdge(int node1, int node2) {
         if (hasEdge(node1, node2))
-            return ((NodeInfo) getNode(node1)).edges.get(node2).weigh;
+            return ((NodeInfo) getNode(node1)).edges.get(node2).weight;
         return -1;
     }
 
@@ -95,7 +116,8 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
 
     /**
      * This function makes an edge between the vertices (node1 and node2)
-     * by inserting one node into the neighbor's list of the others node.
+     * by inserting one node into the neighbor's list of the others node,
+     * in addition inserting one node into the edges list of the others node.
      *
      * @param node1
      * @param node2
@@ -106,10 +128,11 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
             if (!hasEdge(node1, node2)) {
                 this.edSize++;
             }
+            if (w != getEdge(node1, node2))
+                this.mc++;
+
             ((NodeInfo) this.vertices.get(node2)).addNi(this.vertices.get(node1), w);
             ((NodeInfo) this.vertices.get(node1)).addNi(this.vertices.get(node2), w);
-
-            this.mc++;
 
         }
     }
@@ -133,6 +156,13 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         return null;
     }
 
+    /**
+     * The function passes over all the neighbors of the vertex and removes the common edges.
+     * Finally delete the vertex from the graph.
+     *
+     * @param key
+     * @return the deleted vertex.
+     */
     @Override
     public node_info removeNode(int key) {
         if (!this.vertices.containsKey(key)) return null;
@@ -174,6 +204,13 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         return myNode;
     }
 
+    /**
+     * This function removes the edge between vertices node1 and node2
+     * by deleting one node of the neighbor's list of the other node.
+     *
+     * @param node1
+     * @param node2
+     */
     @Override
     public void removeEdge(int node1, int node2) {
         if (node1 != node2 & vertices.containsKey(node1) & vertices.containsKey(node2) & hasEdge(node1, node2)) {
@@ -208,6 +245,12 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         return this.mc;
     }
 
+    /**
+     * @return a string representation of the WGraph_DS. In general returns a
+     * string that "textually represents" this WGraph_DS.
+     * The result is a concise but informative representation
+     * that is easy for a person to read.
+     */
     @Override
     public String toString() {
         return "{" + vertices +
@@ -217,6 +260,13 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
                 '}';
     }
 
+    /**
+     * Indicates whether some other WGraph_DS is "equal to" this one.
+     * by examining each element in the WGraph_DS obj.
+     *
+     * @param o (WGraph_DS)
+     * @return true if this WGraph_DS is the same as the WGraph_DS; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof WGraph_DS))
@@ -225,13 +275,14 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         if (w.edgeSize() != this.edSize | w.nodeSize() != this.noSize)
             return false;
 
-        if (!(w.vertices.equals(this.vertices)))
-            return false;
-
-        return true;
+        return w.vertices.equals(this.vertices);
     }
 
-
+    /**
+     * This class implements node_info interface that represents the set of operations applicable on a
+     * node (vertex) in an (undirectional) weighted graph.
+     * The vertex's neighbors and the connected edges are implemented by HashMap for high efficiency.
+     */
     private static class NodeInfo implements node_info, java.io.Serializable {
 
         private static int id = 0;
@@ -254,6 +305,11 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
 
         }
 
+        /**
+         * Constructs a NodeInfo with the same id that was received.
+         *
+         * @param k
+         */
         public NodeInfo(int k) {
             this.key = k;
             this.tag = 0;
@@ -264,8 +320,8 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         }
 
         /**
-         * Constructs a NodeData with the same fields
-         * as the specified NodeData object that was received.
+         * Constructs a NodeInfo with the same fields
+         * as the specified NodeInfo object that was received.
          *
          * @param node
          */
@@ -332,18 +388,11 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
         }
 
         /**
-         * @return a collection with all the nodes edges of this vertex.
-         */
-        public Collection<EdgeNode> getEdgeList() {
-            return this.edges.values();
-        }
-
-        /**
          * @param key
          * @return true if have an edge between the vertices.
          */
         public boolean hasNi(int key) {
-            return this.key == key | this.edges.containsKey(key);
+            return this.edges.containsKey(key);
         }
 
         /**
@@ -357,12 +406,12 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
                 EdgeNode temp = new EdgeNode(key, t.getKey(), weight);
                 this.edges.put(t.getKey(), temp);
             } else if (myNeighbors.containsKey(t.getKey()) & t.getKey() != this.key & weight >= 0) {
-                edges.get(t.getKey()).setWeigh(weight);
+                edges.get(t.getKey()).setWeight(weight);
             }
         }
 
         /**
-         * Removes the edge between this vertex and node.
+         * Removes the node and the edges between this vertex and others.
          *
          * @param node
          */
@@ -373,11 +422,24 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
             }
         }
 
+        /**
+         * @return a string representation of the NodeInfo. In general returns a
+         * string that "textually represents" this NodeInfo.
+         * The result is a concise but informative representation
+         * that is easy for a person to read.
+         */
         @Override
         public String toString() {
             return "" + key;
         }
 
+        /**
+         * Indicates whether some other NodeInfo is "equal to" this one.
+         * by examining each element in the NodeInfo obj.
+         *
+         * @param o (NodeInfo)
+         * @return true if this NodeInfo is the same as the NodeInfo; false otherwise.
+         */
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof NodeInfo))
@@ -396,56 +458,68 @@ public class WGraph_DS implements weighted_graph, java.io.Serializable {
 
         }
 
+        /**
+         * This class represents the set of operations applicable on a
+         * edge in an (unidirectional) weighted graph.
+         * each edge contain the key nodes are connect and the weight of the edge.
+         */
         public static class EdgeNode implements java.io.Serializable {
             int first_key;
             int second_key;
-            double weigh;
-            double flag;
+            double weight;
 
-            public EdgeNode(EdgeNode t) {
-                this.weigh = t.weigh;
-                this.flag = t.flag;
-                this.first_key = t.first_key;
-                this.second_key = t.second_key;
-            }
-
-            public EdgeNode(int first_key, int second_key, double weigh) {
-                this.weigh = weigh;
-                this.flag = 0;
+            /**
+             * Constructs a EdgeNode with receives data.
+             */
+            public EdgeNode(int first_key, int second_key, double weight) {
+                this.weight = weight;
                 this.first_key = first_key;
                 this.second_key = second_key;
             }
 
+            /**
+             * @return the first node's key.
+             */
             public int getFirst_key() {
                 return first_key;
             }
 
+            /**
+             * @return the second node's key.
+             */
             public int getSecond_key() {
                 return second_key;
             }
 
-            public double getWeigh() {
-                return weigh;
+            /**
+             * @return the weight of the edge.
+             */
+            public double getWeight() {
+                return weight;
             }
 
-            public void setWeigh(double weigh) {
-                this.weigh = weigh;
+            /**
+             * Sets the weight of the edge.
+             *
+             * @param weight
+             */
+            public void setWeight(double weight) {
+                this.weight = weight;
             }
 
-            public double getFlag() {
-                return flag;
-            }
-
-            public void setFlag(double flag) {
-                this.flag = flag;
-            }
-
+            /**
+             * Indicates whether some other edge is "equal to" this one.
+             * by examining each element in the edge obj.
+             *
+             * @param o (edge)
+             * @return true if this edge is the same as the edge; false otherwise.
+             */
             @Override
             public boolean equals(Object o) {
                 if (!(o instanceof EdgeNode))
                     return false;
                 EdgeNode t = (EdgeNode) o;
-                if (this.weigh == t.weigh & this.flag == t.flag & this.first_key == t.first_key & this.second_key == t.second_key) {
+                if (this.weight == t.weight & this.first_key == t.first_key & this.second_key == t.second_key) {
                     return true;
                 }
                 return false;

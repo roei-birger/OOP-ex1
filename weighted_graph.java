@@ -10,9 +10,9 @@ import java.util.Collection;
  */
 public interface weighted_graph {
     /**
-     * return the node_info by the node_id,
+     * return the node_data by the node_id,
      * @param key - the node_id
-     * @return the node_info_data by the node_id, null if none.
+     * @return the node_data by the node_id, null if none.
      */
     public node_info getNode(int key);
     /**
@@ -49,7 +49,7 @@ public interface weighted_graph {
      * This method return a pointer (shallow copy) for a
      * Collection representing all the nodes in the graph.
      * Note: this method should run in O(1) tim
-     * @return Collection<node_info>
+     * @return Collection<node_data>
      */
     public Collection<node_info> getV();
     /**
@@ -57,7 +57,7 @@ public interface weighted_graph {
      * This method returns a Collection containing all the
      * nodes connected to node_id
      * Note: this method can run in O(k) time, k - being the degree of node_id.
-     * @return Collection<node_info>
+     * @return Collection<node_data>
      */
     public Collection<node_info> getV(int node_id);
     /**

@@ -16,17 +16,31 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
         this.my_g = new WGraph_DS();
     }
 
+    /**
+     * Passes 'my_g' to be the pointer of the weighted_graph (g) that received.
+     *
+     * @param g
+     */
     @Override
     public void init(weighted_graph g) {
         this.my_g = g;
     }
 
+    /**
+     * @return the weighted_graph at the WGraph_Algo.init
+     */
     @Override
     public weighted_graph getGraph() {
 
         return this.my_g;
     }
 
+    /**
+     * Build a deep copy of the received graph.
+     * By calling the WGraph_DS copy constructor.
+     *
+     * @return the created graph.
+     */
     @Override
     public weighted_graph copy() {
         weighted_graph graphToCopy = new WGraph_DS(my_g);
@@ -59,7 +73,7 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
     @Override
     public boolean isConnected() {
         if (my_g == null) {
-            return true;
+            return false;
         }
         resetTags(my_g);
         if (my_g.nodeSize() < 2) return true;
@@ -87,7 +101,14 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
 
     }
 
-
+    /**
+     * The method checks the shortest path between two vertices by using the "Dijkstra" method.
+     * Each vertex that the method checks is updated in the myWay HASHMAP.
+     *
+     * @param src  - start node
+     * @param dest - end (target) node
+     * @return the length of the shortest path between src to dest
+     */
     @Override
     public double shortestPathDist(int src, int dest) {
         path = new HashMap<>();
@@ -139,7 +160,17 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
         return -1;
     }
 
-
+    /**
+     * The method calls "shortestPathDist" method on the graph.
+     * After that the method used the myWay HASHMAP that the function created.
+     * each time inserts the next vertex into the list.
+     * The method will be run until the SRC vertex enters the list.
+     * Finally we return the created list.
+     *
+     * @param src  - start node
+     * @param dest - end (target) node
+     * @return the the shortest path between src to dest - as an ordered List of nodes.
+     */
     @Override
     public List<node_info> shortestPath(int src, int dest) {
         double dist = shortestPathDist(src, dest);
@@ -163,6 +194,13 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
         return finalList;
     }
 
+    /**
+     * Saves this weighted (undirected) graph to the given
+     * file name
+     *
+     * @param file - the file name.
+     * @return true - if the file was successfully saved
+     */
     @Override
     public boolean save(String file) {
         try {
@@ -182,6 +220,13 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
 
     }
 
+    /**
+     * This method load a graph to this graph algorithm.
+     * the file load underlying graph.
+     *
+     * @param file - file name.
+     * @return true - if the graph was successfully loaded.
+     */
     @Override
     public boolean load(String file) {
         try {
@@ -200,6 +245,12 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
         return true;
     }
 
+    /**
+     * @return a string representation of the WGraph_Algo. In general returns a
+     * string that "textually represents" this WGraph_Algo.
+     * The result is a concise but informative representation
+     * that is easy for a person to read.
+     */
     @Override
     public String toString() {
         return "WGraph_Algo{" +
@@ -207,12 +258,22 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
                 '}';
     }
 
+    /**
+     * This class represents a support object for the "shortestPath" method,
+     * at the "shortestPathDist" method אhe graph is tested to find the shortest
+     * path between vertices. Each vertex that found in this way is preserved
+     * by this object in order to know which vertex was "his parent"
+     * on the way and what is the weight of the edge between them.
+     */
     public static class myWay implements Comparable<myWay> {
         private int id;
         private double shortDis;
         private myWay parent;
         private int flag;
 
+        /**
+         * Constructs a myWay with a basic fields
+         */
         public myWay(int id) {
             this.id = id;
             this.shortDis = Double.POSITIVE_INFINITY;
@@ -222,34 +283,67 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
 
         }
 
+        /**
+         * @return the id.
+         */
         public int getId() {
             return this.id;
         }
 
+        /**
+         * @return the ShortDis.
+         */
         public double getShortDis() {
             return this.shortDis;
         }
 
+        /**
+         * Sets the shortDis of the edge.
+         *
+         * @param shortDis
+         */
         public void setShortDis(double shortDis) {
             this.shortDis = shortDis;
         }
 
+        /**
+         * @return the parent.
+         */
         public myWay getParent() {
             return this.parent;
         }
 
+        /**
+         * Sets the parent of the vertex.
+         *
+         * @param parent
+         */
         public void setParent(myWay parent) {
             this.parent = parent;
         }
 
+        /**
+         * @return the flag.
+         */
         public int getFlag() {
             return this.flag;
         }
 
+        /**
+         * Sets the flag of the vertex.
+         *
+         * @param flag
+         */
         public void setFlag(int flag) {
             this.flag = flag;
         }
 
+        /**
+         * The method defines a linear order between two sides in a graph for comparing edges.
+         *
+         * @param o
+         * @return
+         */
         @Override
         public int compareTo(myWay o) {
             if (this.shortDis < o.getShortDis())
@@ -259,6 +353,12 @@ public class WGraph_Algo implements weighted_graph_algorithms, java.io.Serializa
             else return 0;
         }
 
+        /**
+         * @return a string representation of the myWay. In general returns a
+         * string that "textually represents" this myWay.
+         * The result is a concise but informative representation
+         * that is easy for a person to read.
+         */
         @Override
         public String toString() {
             return

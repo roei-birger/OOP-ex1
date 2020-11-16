@@ -4,18 +4,18 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WGraph_DSTest {
     private weighted_graph g;
+    static long start = new Date().getTime();
 
     @BeforeAll
     public static void BeforeAll() {
-        System.out.println("start");
+        System.out.println("Start");
     }
 
     //reset graph to default
@@ -76,7 +76,7 @@ class WGraph_DSTest {
 
     @Test
     void hasEdgeSameNode() {
-        assertTrue(g.hasEdge(3, 3), "hasEdge didn't true about node with himself");
+        assertFalse(g.hasEdge(3, 3), "hasEdge didn't true about node with himself");
     }
 
     @Test
@@ -353,7 +353,10 @@ class WGraph_DSTest {
 
     @AfterAll
     public static void AfterAll() {
-        System.out.println("finish succeed");
+        System.out.println("Finish succeed");
+        long end = new Date().getTime();
+        double dt = (end - start) / 1000.0;
+        System.out.println("All program runTime: " + dt);
     }
 
     public weighted_graph graph_creator() {
