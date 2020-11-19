@@ -1,5 +1,7 @@
-package ex1;
+package ex1.tests;
 
+
+import ex1.src.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -245,8 +247,7 @@ class WGraph_AlgoTest {
         }
         long end = new Date().getTime();
         double dt = (end - start) / 1000.0;
-        System.out.println(dt);
-        assertTrue(dt < 3.5);
+        assertTrue(dt < 3.9);
         System.out.println("runTimeTwoMillionNodes: " + dt);
 
     }

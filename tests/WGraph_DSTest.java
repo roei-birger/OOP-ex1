@@ -1,5 +1,5 @@
-package ex1;
-
+package ex1.tests;
+import ex1.src.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
